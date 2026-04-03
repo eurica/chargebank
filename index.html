@@ -488,7 +488,8 @@
            </td></tr>`
         : '');
 
-    if (baseline && Math.round(extremeCount / 12 * 100) >= 35) {
+    if (ksStats.flight.avg !== null && ksStats.digraph.avg !== null &&
+        ksStats.flight.avg < 200 && ksStats.digraph.avg < 200) {
       alert("You're getting MFA-ed");
     }
 
