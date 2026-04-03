@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chargebank — Sign in</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      color: #1a1a2e;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      background: #4f46e5;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-mark svg { display: block; }
+
+    .logo-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #1a1a2e;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 1.75rem;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1.1rem;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.35rem;
+    }
+
+    input {
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: #1a1a2e;
+      border: 1.5px solid #d1d5db;
+      border-radius: 7px;
+      padding: 0.55rem 0.75rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      background: #fff;
+      width: 100%;
+    }
+
+    input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
+    }
+
+    input.error { border-color: #ef4444; }
+
+    .error-msg {
+      font-size: 0.75rem;
+      color: #ef4444;
+      margin-top: 0.3rem;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      background: #4f46e5;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    button[type="submit"]:hover { background: #4338ca; }
+    button[type="submit"]:active { transform: scale(0.985); }
+
+    /* Success screen */
+    #success {
+      display: none;
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      background: #ecfdf5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+
+    #success h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    #success p {
+      font-size: 0.9rem;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .ks-stats {
+      margin-top: 1.5rem;
+      text-align: left;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+    }
+
+    .ks-stats h3 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #9ca3af;
+      margin-bottom: 0.75rem;
+    }
+
+    .ks-stats table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    .ks-stats th {
+      text-align: right;
+      font-weight: 600;
+      color: #6b7280;
+      padding: 0.15rem 0.5rem 0.15rem 0;
+      width: 72px;
+    }
+
+    .ks-stats th:first-child {
+      text-align: left;
+      width: auto;
+      padding-left: 0;
+      color: #374151;
+    }
+
+    .ks-stats td {
+      text-align: right;
+      color: #1a1a2e;
+      font-variant-numeric: tabular-nums;
+      padding: 0.15rem 0.5rem 0.15rem 0;
+    }
+
+    .ks-stats td:first-child {
+      text-align: left;
+      padding-left: 0;
+      font-weight: 500;
+    }
+
+    .ks-stats .null-val { color: #d1d5db; }
+
+    .ks-stats .delta {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #1a1a2e;
+    }
+
+    .ks-stats .delta-extreme { color: #dc2626; }
+    .ks-stats .delta-same    { color: #9ca3af; }
+
+    @media (max-width: 400px) {
+      .card { padding: 2rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-mark">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 2L3 6v8l7 4 7-4V6L10 2z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
+        <circle cx="10" cy="10" r="2.5" fill="#fff"/>
+      </svg>
+    </div>
+    <div class="logo-name">Chargebank</div>
+  </div>
+
+  <h1>Welcome back</h1>
+  <p class="subtitle">Sign in to your account.</p>
+
+  <form id="login-form" novalidate>
+
+    <!-- Hidden keystroke dynamics fields -->
+    <input type="hidden" name="ks_count" id="ks_count" />
+    <input type="hidden" name="ks_dwell_min" id="ks_dwell_min" />
+    <input type="hidden" name="ks_dwell_max" id="ks_dwell_max" />
+    <input type="hidden" name="ks_dwell_avg" id="ks_dwell_avg" />
+    <input type="hidden" name="ks_dwell_stddev" id="ks_dwell_stddev" />
+    <input type="hidden" name="ks_flight_min" id="ks_flight_min" />
+    <input type="hidden" name="ks_flight_max" id="ks_flight_max" />
+    <input type="hidden" name="ks_flight_avg" id="ks_flight_avg" />
+    <input type="hidden" name="ks_flight_stddev" id="ks_flight_stddev" />
+    <input type="hidden" name="ks_digraph_min" id="ks_digraph_min" />
+    <input type="hidden" name="ks_digraph_max" id="ks_digraph_max" />
+    <input type="hidden" name="ks_digraph_avg" id="ks_digraph_avg" />
+    <input type="hidden" name="ks_digraph_stddev" id="ks_digraph_stddev" />
+
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" autocomplete="username"
+             placeholder="your-username" spellcheck="false" autocapitalize="none" />
+      <span class="error-msg" id="err_username">Username is required.</span>
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="current-password"
+             placeholder="••••••••" />
+      <span class="error-msg" id="err_password">Password is required.</span>
+    </div>
+
+    <button type="submit">Sign in &rarr;</button>
+  </form>
+
+  <div id="success">
+    <div class="success-icon">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 13l5.5 5.5L21 7" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2>Welcome back, <span id="success-username"></span>!</h2>
+    <p>You have successfully signed in.</p>
+
+    <div class="ks-stats">
+      <h3>Typing cadence</h3>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>min</th>
+            <th>max</th>
+            <th>avg</th>
+            <th>stddev</th>
+          </tr>
+        </thead>
+        <tbody id="ks-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ── Keystroke dynamics tracker ────────────────────────────────────────────
+  const ks = {
+    keyDownTimes: {},
+    lastKeyDown: null,
+    lastKeyUp: null,
+    dwells: [],
+    flights: [],
+    digraphs: [],
+  };
+
+  function handleKeyDown(e) {
+    const now = performance.now();
+    if (ks.lastKeyDown !== null) {
+      ks.digraphs.push(now - ks.lastKeyDown);
+    }
+    ks.keyDownTimes[e.code] = now;
+    ks.lastKeyDown = now;
+  }
+
+  function handleKeyUp(e) {
+    const now = performance.now();
+    if (ks.keyDownTimes[e.code] !== undefined) {
+      ks.dwells.push(now - ks.keyDownTimes[e.code]);
+      delete ks.keyDownTimes[e.code];
+    }
+    if (ks.lastKeyUp !== null && ks.lastKeyDown !== null && ks.lastKeyDown > ks.lastKeyUp) {
+      ks.flights.push(ks.lastKeyDown - ks.lastKeyUp);
+    }
+    ks.lastKeyUp = now;
+  }
+
+  document.querySelectorAll('input[type="text"], input[type="password"]').forEach(el => {
+    el.addEventListener('keydown', handleKeyDown);
+    el.addEventListener('keyup', handleKeyUp);
+  });
+
+  function stats(arr) {
+    if (!arr.length) return { min: null, max: null, avg: null, stddev: null };
+    const min = Math.min(...arr);
+    const max = Math.max(...arr);
+    const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+    const variance = arr.reduce((sum, v) => sum + (v - avg) ** 2, 0) / arr.length;
+    const stddev = Math.sqrt(variance);
+    const r = v => v !== null ? +v.toFixed(2) : null;
+    return { min: r(min), max: r(max), avg: r(avg), stddev: r(stddev) };
+  }
+
+  function populateHiddenFields() {
+    const d = stats(ks.dwells);
+    const f = stats(ks.flights);
+    const g = stats(ks.digraphs);
+    const totalCount = ks.dwells.length;
+
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.value = val !== null ? val : '';
+    };
+
+    set('ks_count', totalCount);
+    set('ks_dwell_min',    d.min);
+    set('ks_dwell_max',    d.max);
+    set('ks_dwell_avg',    d.avg);
+    set('ks_dwell_stddev', d.stddev);
+    set('ks_flight_min',    f.min);
+    set('ks_flight_max',    f.max);
+    set('ks_flight_avg',    f.avg);
+    set('ks_flight_stddev', f.stddev);
+    set('ks_digraph_min',    g.min);
+    set('ks_digraph_max',    g.max);
+    set('ks_digraph_avg',    g.avg);
+    set('ks_digraph_stddev', g.stddev);
+
+    return { count: totalCount, dwell: d, flight: f, digraph: g };
+  }
+
+  // ── Validation ────────────────────────────────────────────────────────────
+  function setError(inputEl, errId, show) {
+    const errEl = document.getElementById(errId);
+    if (show) {
+      inputEl.classList.add('error');
+      if (errEl) errEl.classList.add('visible');
+    } else {
+      inputEl.classList.remove('error');
+      if (errEl) errEl.classList.remove('visible');
+    }
+    return !show;
+  }
+
+  function validate() {
+    let ok = true;
+    const v = id => document.getElementById(id).value.trim();
+    ok = setError(document.getElementById('username'), 'err_username', !v('username')) && ok;
+    ok = setError(document.getElementById('password'), 'err_password', !v('password')) && ok;
+    return ok;
+  }
+
+  const LS_KEY = 'chargebank_ks_last';
+  let memoryPrev = null; // in-memory fallback when localStorage is blocked
+
+  function loadPrev() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || memoryPrev; }
+    catch { return memoryPrev; }
+  }
+
+  function saveCurrent(s) {
+    memoryPrev = s;
+    try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch { /* storage blocked */ }
+  }
+
+  // ── Form submit ───────────────────────────────────────────────────────────
+  document.getElementById('login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const prev = loadPrev();
+    const ksStats = populateHiddenFields();
+    saveCurrent(ksStats);
+
+    console.log('[Chargebank] Keystroke dynamics', {
+      current: { count: ksStats.count, dwell: ksStats.dwell, flight: ksStats.flight, digraph: ksStats.digraph },
+      ...(prev ? { previous: prev } : {}),
+    });
+
+    document.getElementById('success-username').textContent =
+      document.getElementById('username').value.trim();
+
+    const fmt = v => v !== null ? v + ' ms' : '<span class="null-val">—</span>';
+
+    function deltaHtml(curr, prevStat) {
+      if (!prev || curr === null || prevStat === null || prevStat === 0) return '';
+      const pct = +((curr - prevStat) / prevStat * 100).toFixed(1);
+      if (pct === 0) return `<span class="delta delta-same">±0%</span>`;
+      const extreme = Math.abs(pct) > 50;
+      const sign = pct > 0 ? '+' : '';
+      return `<span class="delta ${extreme ? 'delta-extreme' : ''}">${sign}${pct}%</span>`;
+    }
+
+    const rows = [
+      ['Dwell',   ksStats.dwell,   prev?.dwell],
+      ['Flight',  ksStats.flight,  prev?.flight],
+      ['Digraph', ksStats.digraph, prev?.digraph],
+    ];
+
+    document.getElementById('ks-table-body').innerHTML =
+      rows.map(([label, s, p]) =>
+        `<tr>
+          <td>${label}</td>
+          <td>${fmt(s.min)}${deltaHtml(s.min, p?.min)}</td>
+          <td>${fmt(s.max)}${deltaHtml(s.max, p?.max)}</td>
+          <td>${fmt(s.avg)}${deltaHtml(s.avg, p?.avg)}</td>
+          <td>${fmt(s.stddev)}${deltaHtml(s.stddev, p?.stddev)}</td>
+        </tr>`
+      ).join('') +
+      `<tr><td colspan="5" style="padding-top:0.4rem;color:#6b7280;font-size:0.72rem">${ksStats.count} keystrokes recorded</td></tr>`;
+
+    this.style.display = 'none';
+    document.getElementById('success').style.display = 'block';
+  });
+})();
+</script>
+</body>
+</html>
